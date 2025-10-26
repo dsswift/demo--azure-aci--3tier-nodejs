@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azurite-pvc
+  namespace: three-tier-demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azurite
+  namespace: three-tier-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azurite
+  template:
+    metadata:
+      labels:
+        app: azurite
+    spec:
+      containers:
+      - name: azurite
+        image: mcr.microsoft.com/azure-storage/azurite:latest
+        command: ["azurite", "--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0"]
+        ports:
+        - containerPort: 10000
+          name: blob
+        - containerPort: 10001
+          name: queue
+        - containerPort: 10002
+          name: table
+        volumeMounts:
+        - name: azurite-storage
+          mountPath: /data
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: azurite-storage
+        persistentVolumeClaim:
+          claimName: azurite-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azurite-service
+  namespace: three-tier-demo
+spec:
+  selector:
+    app: azurite
+  ports:
+  - name: blob
+    protocol: TCP
+    port: 10000
+    targetPort: 10000
+  - name: queue
+    protocol: TCP
+    port: 10001
+    targetPort: 10001
+  - name: table
+    protocol: TCP
+    port: 10002
+    targetPort: 10002
+  type: ClusterIP

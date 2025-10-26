@@ -1,0 +1,95 @@
+services:
+  # SQL Server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    platform: linux/amd64
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'YourStrong@Passw0rd'
+      MSSQL_PID: 'Developer'
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    networks:
+      - app-network
+
+  # Azure Storage Emulator (Azurite)
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: azurite
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck"
+    ports:
+      - "10000:10000"  # Blob service
+      - "10001:10001"  # Queue service
+      - "10002:10002"  # Table service
+    volumes:
+      - azurite-data:/data
+    networks:
+      - app-network
+
+  # API 1 - SQL Service
+  api-1:
+    build:
+      context: ./api-1
+      dockerfile: Dockerfile
+    container_name: api-1
+    environment:
+      PORT: 3001
+      SQL_USER: sa
+      SQL_PASSWORD: 'YourStrong@Passw0rd'
+      SQL_SERVER: sqlserver
+      SQL_DATABASE: master
+    ports:
+      - "3001:3001"
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # API 2 - Storage Service
+  api-2:
+    build:
+      context: ./api-2
+      dockerfile: Dockerfile
+    container_name: api-2
+    environment:
+      PORT: 3002
+      AZURE_STORAGE_CONNECTION_STRING: 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;'
+      AZURE_CONTAINER_NAME: demo-container
+    ports:
+      - "3002:3002"
+    depends_on:
+      - azurite
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    environment:
+      PORT: 3000
+      API1_URL: http://api-1:3001
+      API2_URL: http://api-2:3002
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-1
+      - api-2
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  sqldata:
+  azurite-data:
+
+networks:
+  app-network:
+    driver: bridge

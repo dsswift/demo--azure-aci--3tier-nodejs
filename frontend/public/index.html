@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three-Tier Demo App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Three-Tier Demo</h1>
+            <div class="config-inline">
+                <span id="api1-config" class="config-item">API 1: ...</span>
+                <span id="api2-config" class="config-item">API 2: ...</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- API 1 - SQL Section -->
+            <section class="panel">
+                <h2>API 1 - SQL Server</h2>
+
+                <div class="status-indicator">
+                    <span id="api1-status" class="status unknown">Unknown</span>
+                </div>
+
+                <div class="controls">
+                    <button onclick="checkApi1Health()" class="btn-sm">Health</button>
+                    <button onclick="initializeDatabase()" class="btn-sm">Init DB</button>
+                    <button onclick="fetchSqlData()" class="btn-sm">Fetch Data</button>
+                </div>
+
+                <div class="form-inline">
+                    <input type="text" id="sql-key" placeholder="Key" required>
+                    <input type="text" id="sql-value" placeholder="Value" required>
+                    <button onclick="insertData()" class="btn-sm">Insert</button>
+                </div>
+
+                <div id="sql-results" class="results"></div>
+            </section>
+
+            <!-- API 2 - Storage Section -->
+            <section class="panel">
+                <h2>API 2 - Azure Storage</h2>
+
+                <div class="status-indicator">
+                    <span id="api2-status" class="status unknown">Unknown</span>
+                </div>
+
+                <div class="controls">
+                    <button onclick="checkApi2Health()" class="btn-sm">Health</button>
+                    <button onclick="listFiles()" class="btn-sm">List Files</button>
+                </div>
+
+                <div class="form-inline">
+                    <input type="text" id="content-filename" placeholder="Filename" class="input-sm">
+                    <textarea id="content-text" placeholder="Content" rows="2" class="input-sm"></textarea>
+                    <button onclick="uploadContent()" class="btn-sm">Upload Text</button>
+                </div>
+
+                <div class="form-inline">
+                    <input type="file" id="file-input" class="input-sm">
+                    <button onclick="uploadFile()" class="btn-sm">Upload File</button>
+                </div>
+
+                <div id="storage-results" class="results"></div>
+            </section>
+        </div>
+
+        <!-- Request/Response Log Section -->
+        <section class="log-section">
+            <div class="log-header">
+                <h2>Request/Response Log</h2>
+                <button onclick="clearLogs()" class="clear-btn">Clear Log</button>
+            </div>
+            <div id="request-log" class="request-log"></div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

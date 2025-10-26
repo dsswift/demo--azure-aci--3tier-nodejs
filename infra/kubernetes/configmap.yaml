@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: three-tier-demo
+data:
+  SQL_SERVER: "sqlserver-service"
+  SQL_DATABASE: "master"
+  SQL_USER: "sa"
+  AZURE_CONTAINER_NAME: "demo-container"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+  namespace: three-tier-demo
+type: Opaque
+stringData:
+  SQL_PASSWORD: "YourStrong@Passw0rd"
+  AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite-service:10000/devstoreaccount1;"
