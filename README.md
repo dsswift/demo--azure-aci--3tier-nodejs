@@ -2,6 +2,12 @@
 
 Containerized three-tier architecture demonstrating multi-environment deployment with Node.js, SQL Server, and Azure Storage.
 
+This demo includes examples for running this project in the following deployment environments:
+- npm run (local)
+- docker compose (local)
+- minikube Kubernetes (local)
+- Azure Container Instances (Azure Public Cloud)
+
 ## Architecture
 
 ```ini
@@ -76,9 +82,10 @@ make clean           # Clean docker and kubernetes resources
 ├── infra/
 │   ├── kubernetes/   # K8s manifests
 │   └── azure/        # ACI config
+├── DEPLOYMENT.md
 ├── docker-compose.yml
 ├── Makefile
-└── DEPLOYMENT.md
+└── README.md
 ```
 
 ## API Endpoints

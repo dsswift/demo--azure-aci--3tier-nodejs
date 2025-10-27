@@ -44,32 +44,17 @@ make k8s-forward
 
 Access: http://localhost:3000
 
-### Verify
-
-```bash
-kubectl get pods -n three-tier-demo
-kubectl get svc -n three-tier-demo
-kubectl logs -n three-tier-demo -l app=frontend
-```
-
-### Scale
-
-```bash
-kubectl scale deployment frontend -n three-tier-demo --replicas=3
-kubectl scale deployment api-1 -n three-tier-demo --replicas=2
-```
-
 ### Cleanup
 
 ```bash
-make k8s-delete
-# or
-kubectl delete namespace three-tier-demo
+make k8s-delete # or kubectl delete namespace three-tier-demo
 ```
 
 ## Azure Container Instances
 
-**Automated deployment:**
+### Automated deployment
+
+This script will deploy the Azure infrastructure, build the container images, push the images to the Azure Container Registry, and then deploy them to them to an Azure Container Instance.
 
 ```bash
 cd infra/azure
